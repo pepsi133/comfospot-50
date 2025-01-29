@@ -39,7 +39,7 @@ api:
 ota:
   platform: esphome
 dashboard_import:
-  package_import_url: github://lorenzspenger/comfospot-50/Software/Comfospot-dist.yaml
+  package_import_url: github://lorenzspenger/comfospot-50/Software/Comfospot-dist.yaml@main
   import_full_config: true  # or true
 wifi:
   ap:
