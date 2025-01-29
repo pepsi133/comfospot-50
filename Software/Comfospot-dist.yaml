@@ -23,7 +23,7 @@ esphome:
     board_build.f_cpu: 80000000L
   project:
     name: thatslolo.comfospot-50
-    version: '0.8'
+    version: '0.9'
 esp32:
   board: esp32-c3-devkitm-1
   framework:
@@ -39,13 +39,11 @@ api:
 ota:
   platform: esphome
 dashboard_import:
-  package_import_url: github://lorenzspenger/Comfospot-50-installer/comfospot_50.yaml
+  package_import_url: github://lorenzspenger/comfospot-50/Software/Comfospot-dist.yaml
   import_full_config: false  # or true
 wifi:
   ap:
     ssid: Comfospot
     password: ''
 captive_portal:
-esp32_improv:
-  authorizer: none
 improv_serial:
