@@ -30,6 +30,9 @@ esphome:
       - output.turn_off: ventilation_minus
   on_boot:
     then:
+      - globals.set:
+          id: current_set_speed
+          value: "-1"
       - script.execute: init
 
 # initialize filter runtime
@@ -49,7 +52,7 @@ time:
 globals:
   - id: current_fan_speed
     type: int
-    # restore_value: true
+    restore_value: false
     initial_value: '-1'
   - id: current_set_speed
     type: int
@@ -133,8 +136,11 @@ script:
     then:
       - lambda: id(button_manipulation) = true;
       - logger.log: "set fan speed started"
+      - logger.log: "waiting for toggle intake script to finish"
       - script.wait: toggle_intake
+      - logger.log: "waiting for toggle exhaust script to finish"
       - script.wait: toggle_exhaust
+      - logger.log: "waiting for init script to finish"
       - script.wait: init
       - logger.log: "waiting for readout script to finish"
       - script.wait: retrieve_fan_speed  ### make sure current instance has actual speed
@@ -214,6 +220,7 @@ script:
           condition:
             lambda: return id(button_manipulation);
           then:
+            - logger.log: 'button manipulation from ESPHome, not reading fan speed'
           else:
             - delay: 250ms # wait for led to come on
             # when fan is turned off through buttons, reflect this
@@ -428,6 +435,15 @@ script:
   # make sure fan is turned on on speed 1 at least after boot, since else no power will be provided
   - id: init
     then:
+      - wait_until:
+          condition:
+            for: 
+              time: 5000ms
+              condition:
+                lambda: "return (!(id(led_1).state) && !(id(led_2).state) && !(id(led_3).state) && !(id(led_4).state));"
+          timeout: 15s
+      - script.stop: retrieve_fan_speed
+      - script.stop: set_fan_speed
       - lambda: id(button_manipulation) = true;
       - button.press: button_plus
       - delay: 500ms
@@ -442,6 +458,7 @@ script:
                 call.set_speed(1);
                 call.perform(); 
       - lambda: id(button_manipulation) = false;
+      - logger.log: "init script finished, fan turned on with speed 1 if not already set"
 
   - id: intake_impossible
     mode: single
